@@ -117,6 +117,25 @@ class LoginUser extends StatelessWidget {
                         textAlign: TextAlign.end,
                       ),
                       SizedBox(height: 20),
+                      Text("- - - - - OR - - - - -"),
+                      Obx(() => ElevatedButton(
+                            onPressed: () {
+                              signController.googleSignIn();
+                            },
+                            child: signController.isLodingSign.value == false
+                                ? Text('Googel Sign In',
+                                    style: TextStyle(color: Colors.white))
+                                : CircularProgressIndicator(),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.navy,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 100, vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                          )),
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

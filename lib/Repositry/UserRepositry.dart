@@ -136,4 +136,30 @@ class LoginRepositry {
 
     // Return UserModelDto from the 'user' part of the response
   }
+
+  Future<void> googleSignUp(dynamic data, String url) async {
+    try {
+      // Get the response from the API
+      dynamic response = await _appService.postApi(data, url);
+
+      // Decode the response to a map
+      Map<String, dynamic> decodedResponse = jsonDecode(response);
+
+      print("From repository");
+
+      String token = decodedResponse['token'];
+      print(token);
+
+      // Save the token to SharedPreferences
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('jwtToken', token);
+
+      // Retrieve the token to verify it was saved correctly
+      String? jwt = prefs.getString('jwtToken');
+      print("jwt token: $jwt");
+    } catch (e) {
+      print("Error in googleSignUp: $e");
+      throw e; // Rethrow the error to be caught in the calling function
+    }
+  }
 }
