@@ -6,7 +6,7 @@ import 'package:attendence/Screen/UserProfile/UserProfileScreen.dart';
 import 'package:attendence/Services/AuthService.dart';
 import 'package:attendence/Screen/SplashScreen/splashScreen.dart';
 import 'package:attendence/Screen/SplashScreen/EmailVerification.dart';
-import 'package:attendence/Screen/SignUp/Sign.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

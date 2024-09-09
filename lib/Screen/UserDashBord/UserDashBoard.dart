@@ -5,11 +5,11 @@ import 'dart:typed_data';
 
 import 'package:attendence/Model/UserSendData.dart';
 import 'package:attendence/Screen/Controller/UserProfileController.dart';
-import 'package:attendence/Services/Cloudinary.dart';
+
 import 'package:attendence/Utils/Colors.dart';
 import 'package:attendence/Services/FilePicker.dart';
 import 'package:attendence/Screen/Controller/SignContoller.dart';
-import 'package:cloudinary_public/cloudinary_public.dart';
+
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';

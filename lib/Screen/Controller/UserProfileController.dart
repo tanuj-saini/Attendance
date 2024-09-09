@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'dart:io';
 
-import 'package:attendence/API/data/AppException.dart';
 import 'package:attendence/API/url_cosnt.dart';
 import 'package:attendence/Model/UserDto.dart';
 import 'package:attendence/Model/UserModel.dart';
