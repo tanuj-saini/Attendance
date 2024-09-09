@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:io';
+
 import 'dart:typed_data';
 
 import 'package:attendence/Model/UserSendData.dart';
@@ -71,6 +73,34 @@ class _UserDashBoard extends State<UserDashBoard> {
     _initRecorder();
     scanNetworks();
     getDeviceInfo();
+  }
+
+  int _start = 50; // Initial time
+  bool _isButtonDisabled = false;
+  Timer? _timer;
+
+  void _startTimer() {
+    if (_timer != null) {
+      _timer!.cancel(); // Cancel any existing timer
+    }
+
+    setState(() {
+      _isButtonDisabled = true;
+      _start = 50; // Reset the timer
+    });
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_start == 0) {
+        timer.cancel();
+        setState(() {
+          _isButtonDisabled = false;
+        });
+      } else {
+        setState(() {
+          _start--;
+        });
+      }
+    });
   }
 
   Future<void> _requestPermissions() async {
@@ -550,6 +580,7 @@ class _UserDashBoard extends State<UserDashBoard> {
                       if (micPermission.isGranted &&
                           locationPermission.isGranted) {
                         if (_filePathBytes == null) {
+                          _isButtonDisabled ? null : _startTimer;
                           await scanNetworks();
                           await _startRecording();
                         }

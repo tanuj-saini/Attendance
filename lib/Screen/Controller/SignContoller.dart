@@ -1,4 +1,5 @@
 import 'package:attendence/Model/UserDto.dart';
+import 'package:attendence/Repositry/UserRepositry.dart';
 import 'package:attendence/Screen/UserDashBord/UserDashBoard.dart';
 import 'package:attendence/Screen/Controller/UserProfileController.dart';
 import 'package:attendence/Screen/UserProfile/UserProfileScreen.dart';
@@ -13,11 +14,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SignViewModelContoller extends GetxController {
   FirebaseAuth _auth = FirebaseAuth.instance;
-  // final AuthService _authService = AuthService();
+  final AuthService _authService = AuthService();
   final emailController = TextEditingController().obs;
   final passwordController = TextEditingController().obs;
   RxBool isLodingLogin = false.obs;
   RxBool isLodingSign = false.obs;
+  final _api = LoginRepositry();
   RxBool isLodingGoogle = false.obs;
   RxBool isLodingPhone = false.obs;
   void changeLodingState(bool value, RxBool booleans) {
@@ -111,19 +113,39 @@ class SignViewModelContoller extends GetxController {
     Get.snackbar("Rest Password", "Email Send Successfull");
   }
 
-  // void googleSign() async {
-  //   User? user = await _authService.signInWithGoogle();
-  //   if (user != null) {
-  //     Get.to(SignUp());
-  //   } else {
-  //     //  SharedPreferences prefs = await SharedPreferences.getInstance();
-  //     //   String? bool = prefs.getString('valid');
-  //     //   if (bool == "true") {
-  //     //     Get.offAll(UserDashBoard());
-  //     //   } else {
-  //     //     Get.offAll(Userprofilescreen());
-  //     //   }
+  void googleSignIn() async {
+    try {
+      // changeLodingState(true, isLodingSign);
+      changeLodingState(true, isLodingLogin);
+      print("start");
+      User? user = await _authService.signInWithGoogle();
 
-  //   }
-  // }
+      if (user == null) {
+        // User canceled Google Sign-In or an error occurred
+        print('Select One Email Id AtLeast');
+        changeLodingState(false, isLodingLogin);
+      } else {
+        // Proceed with the API call
+        print("startApi");
+        _api.googleSignUp({
+          "token": await user.getIdToken(),
+          "clientId": [
+            "214621307690-g9l958khdj2rcce4nsbrd7i17phgu9go.apps.googleusercontent.com"
+          ]
+        }, "/user/googleSignup").then((value) {
+          changeLodingState(false, isLodingLogin);
+          Get.snackbar("SuccessFully Login", "Welcome ");
+          Get.to(UserDashBoard());
+        }).catchError((error) {
+          Get.snackbar("Error", error.toString());
+          print("Error: $error");
+          changeLodingState(false, isLodingLogin);
+        });
+      }
+    } catch (e) {
+      debugPrint('********************ERROR1****************');
+      Get.snackbar("User Failed", e.toString());
+      changeLodingState(false, isLodingLogin);
+    }
+  }
 }

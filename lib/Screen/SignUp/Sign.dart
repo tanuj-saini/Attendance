@@ -94,27 +94,25 @@ class SignUp extends StatelessWidget {
                             iconButton: Icon(Icons.password),
                           )),
                       SizedBox(height: 20),
-                      //  Text("- - - - - OR - - - - -"),
-                      //  Obx(() => ElevatedButton(
-                      //       onPressed: () {
-                      //         signController.googleSign();
-
-                      //       },
-                      //       child: signController.isLodingSign.value == false
-                      //           ? Text('Googel Sign IN',
-                      //               style: TextStyle(color: Colors.white)):CircularProgressIndicator(),
-
-                      //       style: ElevatedButton.styleFrom(
-                      //         backgroundColor: AppColors.navy,
-                      //         padding: EdgeInsets.symmetric(
-                      //             horizontal: 100, vertical: 15),
-                      //         shape: RoundedRectangleBorder(
-                      //           borderRadius: BorderRadius.circular(30),
-                      //         ),
-                      //       ),
-                      //     )),
-                      //       SizedBox(height: 10),
-
+                      Text("- - - - - OR - - - - -"),
+                      Obx(() => ElevatedButton(
+                            onPressed: () {
+                              signController.googleSignIn();
+                            },
+                            child: signController.isLodingSign.value == false
+                                ? Text('Googel Sign IN',
+                                    style: TextStyle(color: Colors.white))
+                                : CircularProgressIndicator(),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.navy,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 100, vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                          )),
+                      SizedBox(height: 10),
                       Obx(() => ElevatedButton(
                             onPressed: () {
                               signController.emailPasswordCreateUser(context);

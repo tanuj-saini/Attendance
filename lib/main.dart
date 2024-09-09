@@ -37,24 +37,27 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         // home: Userprofilescreen()
-        home: typeOfUser == null
-            ? SplashScreen()
-            : Checkinguserjwt(jwtToken: typeOfUser!));
+        home: AuthWrapper(typeOfUser: typeOfUser));
+        // typeOfUser == null
+        //     ? SplashScreen()
+        //     : Checkinguserjwt(jwtToken: typeOfUser!));
   }
 }
-// class AuthWrapper extends StatelessWidget {
-//   final String? typeOfUser;
-//   AuthWrapper({required this .typeOfUser});
-//   @override
-//   Widget build(BuildContext context) {
+class AuthWrapper extends StatelessWidget {
+  final String? typeOfUser;
+  AuthWrapper({required this .typeOfUser});
+  @override
+  Widget build(BuildContext context) {
 
-//     User? user = FirebaseAuth.instance.currentUser;
+    User? user = FirebaseAuth.instance.currentUser;
 
    
-//     if (user != null) {
-//       return UserDashBoard(); 
-//     } else {
-      
-//     }
-//   }
-// }
+    if (user != null) {
+      return UserDashBoard(); 
+    } else {
+      return typeOfUser == null
+            ? SplashScreen()
+            : Checkinguserjwt(jwtToken: typeOfUser!);
+    }
+  }
+}
