@@ -141,6 +141,7 @@ class LoginRepositry {
     try {
       // Get the response from the API
       dynamic response = await _appService.postApi(data, url);
+      print(response);
 
       // Decode the response to a map
       Map<String, dynamic> decodedResponse = jsonDecode(response);

@@ -41,6 +41,7 @@ class _UserDashBoard extends State<UserDashBoard> {
   String? _filePath;
   Uint8List? _filePathBytes;
   Uint8List? _imageBytes;
+  bool scanning = false;
   String? dicveInfo;
   List<WiFiAccessPoint> networks = [];
   Position? _currentPosition;
@@ -75,33 +76,33 @@ class _UserDashBoard extends State<UserDashBoard> {
     getDeviceInfo();
   }
 
-  int _start = 50; // Initial time
-  bool _isButtonDisabled = false;
-  Timer? _timer;
+  // int _start = 50; // Initial time
+  // bool _isButtonDisabled = false;
+  // Timer? _timer;
 
-  void _startTimer() {
-    if (_timer != null) {
-      _timer!.cancel(); // Cancel any existing timer
-    }
+  // void _startTimer() {
+  //   if (_timer != null) {
+  //     _timer!.cancel(); // Cancel any existing timer
+  //   }
 
-    setState(() {
-      _isButtonDisabled = true;
-      _start = 50; // Reset the timer
-    });
+  //   setState(() {
+  //     _isButtonDisabled = true;
+  //     _start = 50; // Reset the timer
+  //   });
 
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_start == 0) {
-        timer.cancel();
-        setState(() {
-          _isButtonDisabled = false;
-        });
-      } else {
-        setState(() {
-          _start--;
-        });
-      }
-    });
-  }
+  //   _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+  //     if (_start == 0) {
+  //       timer.cancel();
+  //       setState(() {
+  //         _isButtonDisabled = false;
+  //       });
+  //     } else {
+  //       setState(() {
+  //         _start--;
+  //       });
+  //     }
+  //   });
+  // }
 
   Future<void> _requestPermissions() async {
     // Request both microphone and location permissions together
@@ -201,6 +202,9 @@ class _UserDashBoard extends State<UserDashBoard> {
   }
 
   Future<void> scanNetworks() async {
+    setState(() {
+      scanning = true;
+    });
     var locationPermission = await Permission.locationWhenInUse.status;
     if (!locationPermission.isGranted) {
       await _requestPermissions();
@@ -219,9 +223,13 @@ class _UserDashBoard extends State<UserDashBoard> {
       var results = await WiFiScan.instance.getScannedResults();
       setState(() {
         networks = results;
+        scanning = false;
         print('Scanned Networks: ${results.length}');
       });
     } else {
+      setState(() {
+        scanning = false;
+      });
       print('Scan failed to start. Reason: $scanResult');
     }
   }
@@ -560,106 +568,110 @@ class _UserDashBoard extends State<UserDashBoard> {
             SizedBox(height: 35),
             Center(
               child: SizedBox(
-                  width: screenWidth * 0.6,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      // Check for permissions
-                      var micPermission = await Permission.microphone.request();
-                      var locationPermission =
-                          await Permission.locationWhenInUse.request();
+                width: screenWidth * 0.6,
+                child: ElevatedButton(
+                  onPressed: userRepos.isLoadingData.value || scanning
+                      ? null // Disable button when loading or scanning
+                      : () async {
+                          // Check for permissions
+                          var micPermission =
+                              await Permission.microphone.request();
+                          var locationPermission =
+                              await Permission.locationWhenInUse.request();
 
-                      // If any permission is denied, show an error and return
-                      if (micPermission.isDenied ||
-                          locationPermission.isDenied) {
-                        Get.snackbar("Permissions Denied",
-                            "Please provide microphone and location permissions to proceed.");
-                        return;
-                      }
+                          // If any permission is denied, show an error and return
+                          if (micPermission.isDenied ||
+                              locationPermission.isDenied) {
+                            Get.snackbar("Permissions Denied",
+                                "Please provide microphone and location permissions to proceed.");
+                            return;
+                          }
 
-                      // If permissions are granted, continue with operations
-                      if (micPermission.isGranted &&
-                          locationPermission.isGranted) {
-                        if (_filePathBytes == null) {
-                          _isButtonDisabled ? null : _startTimer;
-                          await scanNetworks();
-                          await _startRecording();
-                        }
-                        if (dicveInfo == null) {
-                          Get.snackbar("Device Info Error",
-                              "Unable to retrieve device information.");
-                          await getDeviceInfo();
-                        }
+                          // If permissions are granted, continue with operations
+                          if (micPermission.isGranted &&
+                              locationPermission.isGranted) {
+                            if (_filePathBytes == null) {
+                              // _isButtonDisabled ? null : _startTimer;
+                              await scanNetworks();
+                              await _startRecording();
+                            }
+                            if (dicveInfo == null) {
+                              Get.snackbar("Device Info Error",
+                                  "Unable to retrieve device information.");
+                              await getDeviceInfo();
+                            }
 
-                        if (_imageBytes == null) {
-                          Get.snackbar(
-                              "No Photo Found", "Please click a photo.");
-                          await _selectImage();
-                        }
+                            if (_imageBytes == null) {
+                              Get.snackbar(
+                                  "No Photo Found", "Please click a photo.");
+                              await _selectImage();
+                            }
 
-                        if (_currentPosition == null) {
-                          await _determinePosition();
-                          Get.snackbar("Location Error",
-                              "Location permission is required.");
-                        }
+                            if (_currentPosition == null) {
+                              await _determinePosition();
+                              Get.snackbar("Location Error",
+                                  "Location permission is required.");
+                            }
 
-                        if (networks.isEmpty) {
-                          await scanNetworks();
-                          Get.snackbar("WiFi Error",
-                              "No networks found or permission denied.");
-                        }
+                            if (networks.isEmpty) {
+                              await scanNetworks();
+                              Get.snackbar("WiFi Error",
+                                  "No networks found or permission denied.");
+                            }
 
-                        if (_filePathBytes != null &&
-                            _imageBytes != null &&
-                            _currentPosition != null &&
-                            networks.isNotEmpty &&
-                            dicveInfo != null) {
-                          // Construct and send the data
-                          UserModelSendData userSendData = UserModelSendData(
-                            audioUrl: _filePathBytes,
-                            createdAt: DateTime.now(),
-                            deviceInfo: dicveInfo,
-                            imageUrl: _imageBytes,
-                            location: Location(
-                              latitude: _currentPosition!.latitude,
-                              longitude: _currentPosition!.longitude,
-                            ),
-                            name: userRepos.userModelU.value.name ?? "",
-                            rollNumber:
-                                userRepos.userModelU.value.rollNumber ?? "",
-                            wifiNetworks: networks
-                                .map((e) => WifiNetwork(
-                                      ssid: e.ssid,
-                                      strength: e.level,
-                                    ))
-                                .toList(),
-                          );
+                            if (_filePathBytes != null &&
+                                _imageBytes != null &&
+                                _currentPosition != null &&
+                                networks.isNotEmpty &&
+                                dicveInfo != null) {
+                              // Construct and send the data
+                              UserModelSendData userSendData =
+                                  UserModelSendData(
+                                audioUrl: _filePathBytes,
+                                createdAt: DateTime.now(),
+                                deviceInfo: dicveInfo,
+                                imageUrl: _imageBytes,
+                                location: Location(
+                                  latitude: _currentPosition!.latitude,
+                                  longitude: _currentPosition!.longitude,
+                                ),
+                                name: userRepos.userModelU.value.name ?? "",
+                                rollNumber:
+                                    userRepos.userModelU.value.rollNumber ?? "",
+                                wifiNetworks: networks
+                                    .map((e) => WifiNetwork(
+                                          ssid: e.ssid,
+                                          strength: e.level,
+                                        ))
+                                    .toList(),
+                              );
 
-                          print(userSendData.toJson().toString());
-                          userRepos.sendUserDataBytes(userSendData);
-                        } else {
-                          print("Some required data is missing.");
-                        }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.navy,
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+                              print(userSendData.toJson().toString());
+                              userRepos.sendUserDataBytes(userSendData);
+                            } else {
+                              print("Some required data is missing.");
+                            }
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.navy,
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                    child: Obx(() => userRepos.isLoadingData.value == false
-                        ? Text(
-                            "Mark Attendance",
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.white,
-                              letterSpacing: 1,
-                            ),
-                          )
-                        : CircularProgressIndicator()),
-                  )),
+                  ),
+                  child: Obx(() => userRepos.isLoadingData.value || scanning
+                      ? CircularProgressIndicator() // Show loading indicator when scanning
+                      : Text(
+                          "Mark Attendance",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.white,
+                            letterSpacing: 1,
+                          ),
+                        )),
+                ),
+              ),
             ),
           ]),
         ),

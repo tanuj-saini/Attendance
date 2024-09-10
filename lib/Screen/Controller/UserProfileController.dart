@@ -110,10 +110,13 @@ class Userprofilecontroller extends GetxController {
           setUserModelDto(value);
           Get.snackbar("Welcome", "Again ");
           setIsLoading(false.obs);
-          String? token = prefs.getString('valid');
-          if (token == "true") {
-            Get.to(UserDashBoard());
+          // String? token = prefs.getString('valid');
+
+          if (value.name != null) {
+            isLoading.value = false;
+            Get.offAll(UserDashBoard());
           } else {
+            isLoading.value = false;
             Get.to(Userprofilescreen());
           }
         });

@@ -109,14 +109,19 @@ class LoginUser extends StatelessWidget {
                             ),
                           )),
                       SizedBox(height: 20),
-                      Text(
-                        "Forget Password",
-                        style: TextStyle(
-                          color: AppColors.navy,
-                        ),
-                        textAlign: TextAlign.end,
-                      ),
-                      SizedBox(height: 20),
+                      // TextButton(
+                      //   onPressed: () {
+                      //     signController.forgetPassword();
+                      //   },
+                      //   child: Text(
+                      //     "Forget Password",
+                      //     style: TextStyle(
+                      //       color: AppColors.navy,
+                      //     ),
+                      //     textAlign: TextAlign.end,
+                      //   ),
+                      // ),
+                      // SizedBox(height: 20),
                       Text("- - - - - OR - - - - -"),
                       Obx(() => ElevatedButton(
                             onPressed: () {

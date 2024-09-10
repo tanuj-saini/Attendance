@@ -21,7 +21,6 @@ class SignUp extends StatelessWidget {
           true, // Allow layout adjustments when keyboard appears
       backgroundColor: AppColors.navy,
       body: SingleChildScrollView(
-        // Added to allow scrolling when content overflows
         child: Form(
           key: _formKey,
           child: Column(
@@ -69,92 +68,101 @@ class SignUp extends StatelessWidget {
                 height: height *
                     0.55, // Increased height for better scrolling behavior
                 child: FadeInUp(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Sign up',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 25),
-                      Obx(() => CustomTextField(
-                            controller: signController.emailController.value,
-                            hintText: "Email",
-                            iconButton: Icon(Icons.email),
-                          )),
-                      SizedBox(height: 15),
-                      Obx(() => CustomTextField(
-                            controller: signController.passwordController.value,
-                            hintText: "Password",
-                            iconButton: Icon(Icons.password),
-                          )),
-                      SizedBox(height: 20),
-                      Text("- - - - - OR - - - - -"),
-                      Obx(() => ElevatedButton(
-                            onPressed: () {
-                              signController.googleSignIn();
-                            },
-                            child: signController.isLodingSign.value == false
-                                ? Text('Googel Sign IN',
-                                    style: TextStyle(color: Colors.white))
-                                : CircularProgressIndicator(),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.navy,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 100, vertical: 15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                          )),
-                      SizedBox(height: 10),
-                      Obx(() => ElevatedButton(
-                            onPressed: () {
-                              signController.emailPasswordCreateUser(context);
-                            },
-                            child: signController.isLodingSign.value == false
-                                ? Text('Email/Password User Sign',
-                                    style: TextStyle(color: Colors.white))
-                                : CircularProgressIndicator(),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.navy,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 100, vertical: 15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                          )),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("Already have an account?"),
-                          SizedBox(width: 5),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          LoginUser())); // Navigate to login
-                            },
-                            child: Text(
-                              'Sign in',
-                              style: TextStyle(
-                                color: AppColors.navy,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
                           ),
-                        ],
-                      ),
-                    ],
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 25),
+                        Obx(() => CustomTextField(
+                              controller: signController.emailController.value,
+                              hintText: "Email",
+                              iconButton: Icon(Icons.email),
+                            )),
+                        SizedBox(height: 15),
+                        Obx(() => CustomTextField(
+                              controller:
+                                  signController.passwordController.value,
+                              hintText: "Password",
+                              iconButton: Icon(Icons.password),
+                            )),
+                        SizedBox(height: 20),
+                        Obx(() => ElevatedButton(
+                              onPressed: () {
+                                signController.emailPasswordCreateUser(context);
+                              },
+                              child: signController.isLodingSign.value == false
+                                  ? Text('Email/Password User Sign',
+                                      style: TextStyle(color: Colors.white))
+                                  : CircularProgressIndicator(),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.navy,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 100, vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                            )),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text("- - - - - OR - - - - -"),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Obx(() => ElevatedButton(
+                              onPressed: () {
+                                signController.googleSignIn();
+                              },
+                              child:
+                                  signController.isLodingGoogle.value == false
+                                      ? Text('Google Sign In',
+                                          style: TextStyle(color: Colors.white))
+                                      : CircularProgressIndicator(),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.navy,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 100, vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                            )),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("Already have an account?"),
+                            SizedBox(width: 5),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            LoginUser())); // Navigate to login
+                              },
+                              child: Text(
+                                'Sign in',
+                                style: TextStyle(
+                                  color: AppColors.navy,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

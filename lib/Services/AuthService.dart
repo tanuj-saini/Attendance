@@ -10,7 +10,10 @@ class AuthService {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return null;
+      var authentication = await googleUser.authentication;
 
+// We will use this token ID for authentication on the backend side.
+      var tokenId = authentication.idToken;
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
@@ -37,3 +40,31 @@ class AuthService {
   // Get current user
   User? get currentUser => _auth.currentUser;
 }
+
+
+//   Future<String> signInWithGoogle() async {
+//     try {
+//       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+//       if (googleUser == null) return "";
+
+//       final GoogleSignInAuthentication googleAuth =
+//           await googleUser.authentication;
+
+//       final AuthCredential credential = GoogleAuthProvider.credential(
+//         accessToken: googleAuth.accessToken,
+//         idToken: googleAuth.idToken,
+//       );
+
+//       UserCredential userCredential =
+//           await _auth.signInWithCredential(credential);
+//           // var account = await _googleSignIn.signIn();
+// var authentication = await googleUser.authentication;
+
+// // We will use this token ID for authentication on the backend side.
+// var tokenId = authentication.idToken;
+//       return tokenId??"";
+//     } catch (e) {
+//       print('Error during Google Sign-In: $e');
+//       return "";
+//     }
+//   }

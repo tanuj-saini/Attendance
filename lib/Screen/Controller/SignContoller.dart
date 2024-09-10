@@ -10,6 +10,7 @@ import 'package:attendence/Screen/SplashScreen/EmailVerification.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignViewModelContoller extends GetxController {
@@ -25,6 +26,14 @@ class SignViewModelContoller extends GetxController {
   void changeLodingState(bool value, RxBool booleans) {
     booleans.value = value;
   }
+
+  // @override
+  // void onClose() {
+  //   // Dispose of the controllers when the controller is removed
+  //   emailController.value.dispose();
+  //   passwordController.value.dispose();
+  //   super.onClose();
+  // }
 
   final Userprofilecontroller userRepo = Get.put(Userprofilecontroller());
   void emailPasswordCreateUser(BuildContext context) async {
@@ -115,37 +124,74 @@ class SignViewModelContoller extends GetxController {
 
   void googleSignIn() async {
     try {
-      // changeLodingState(true, isLodingSign);
-      changeLodingState(true, isLodingLogin);
-      print("start");
-      User? user = await _authService.signInWithGoogle();
+      GoogleSignIn _googleSignIn = GoogleSignIn(
+        scopes: ['email'],
+      );
 
-      if (user == null) {
-        // User canceled Google Sign-In or an error occurred
-        print('Select One Email Id AtLeast');
-        changeLodingState(false, isLodingLogin);
+      changeLodingState(true, isLodingGoogle);
+      print("start");
+
+      var account = await _googleSignIn.signIn();
+
+      if (account == null) {
+        // User canceled the sign-in or sign-in failed
+        changeLodingState(false, isLodingGoogle);
+        Get.snackbar("Sign-In Canceled", "User canceled the sign-in.");
+        return;
+      }
+
+      var authentication = await account.authentication;
+      var tokenId = authentication.idToken;
+
+      if (tokenId == null) {
+        // Authentication failed or the token is null
+        changeLodingState(false, isLodingGoogle);
+        Get.snackbar("Authentication Failed", "Could not retrieve token.");
+        return;
+      }
+
+      print(tokenId);
+      print("startApi");
+
+      _api.googleSignUp({
+        "token": tokenId,
+      }, "/user/googleSignup").then((value) {
+        changeLodingState(false, isLodingGoogle);
+        Get.snackbar("Successfully Logged In", "Welcome");
+        Get.to(Userprofilescreen());
+      }).catchError((error) {
+        Get.snackbar("Error", error.toString());
+        print("Error: $error");
+        changeLodingState(false, isLodingGoogle);
+      });
+    } catch (e) {
+      debugPrint('********************ERROR1********************');
+      Get.snackbar("Login Failed", e.toString());
+      changeLodingState(false, isLodingGoogle);
+    }
+  }
+
+  void googleSignOut() async {
+    try {
+      GoogleSignIn _googleSignIn = GoogleSignIn();
+
+      // Check if the user is currently signed in
+      if (await _googleSignIn.isSignedIn()) {
+        // Attempt to sign out
+        await _googleSignIn.signOut();
+        Get.snackbar("Logged Out", "You have successfully logged out.");
+        print("User signed out from Google.");
       } else {
-        // Proceed with the API call
-        print("startApi");
-        _api.googleSignUp({
-          "token": await user.getIdToken(),
-          "clientId": [
-            "214621307690-g9l958khdj2rcce4nsbrd7i17phgu9go.apps.googleusercontent.com"
-          ]
-        }, "/user/googleSignup").then((value) {
-          changeLodingState(false, isLodingLogin);
-          Get.snackbar("SuccessFully Login", "Welcome ");
-          Get.to(UserDashBoard());
-        }).catchError((error) {
-          Get.snackbar("Error", error.toString());
-          print("Error: $error");
-          changeLodingState(false, isLodingLogin);
-        });
+        // User is not signed in
+        Get.snackbar(
+            "Not Signed In", "No Google account is currently signed in.");
+        print("No Google account is signed in.");
       }
     } catch (e) {
-      debugPrint('********************ERROR1****************');
-      Get.snackbar("User Failed", e.toString());
-      changeLodingState(false, isLodingLogin);
+      // Handle any errors during sign out
+      debugPrint('********************ERROR1********************');
+      Get.snackbar("Sign-Out Failed", e.toString());
+      print("Error signing out: $e");
     }
   }
 }

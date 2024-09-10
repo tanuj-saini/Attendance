@@ -1,8 +1,5 @@
-import 'package:attendence/Screen/UserDashBord/UserDashBoard.dart';
 import 'package:attendence/Screen/LogIn/Verification/CheckingUserJwt.dart';
 import 'package:attendence/Screen/SplashScreen/splashScreen.dart';
-import 'package:attendence/Screen/SignUp/Sign.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -37,27 +34,27 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         // home: Userprofilescreen()
-        home: AuthWrapper(typeOfUser: typeOfUser));
-        // typeOfUser == null
-        //     ? SplashScreen()
-        //     : Checkinguserjwt(jwtToken: typeOfUser!));
+        home:
+        // AuthWrapper(typeOfUser: typeOfUser));
+    typeOfUser == null
+        ? SplashScreen()
+        : Checkinguserjwt(jwtToken: typeOfUser!));
   }
 }
-class AuthWrapper extends StatelessWidget {
-  final String? typeOfUser;
-  AuthWrapper({required this .typeOfUser});
-  @override
-  Widget build(BuildContext context) {
 
-    User? user = FirebaseAuth.instance.currentUser;
+// class AuthWrapper extends StatelessWidget {
+//   final String? typeOfUser;
+//   AuthWrapper({required this.typeOfUser});
+//   @override
+//   Widget build(BuildContext context) {
+//     // User? user = FirebaseAuth.instance.currentUser;
 
-   
-    if (user != null) {
-      return UserDashBoard(); 
-    } else {
-      return typeOfUser == null
-            ? SplashScreen()
-            : Checkinguserjwt(jwtToken: typeOfUser!);
-    }
-  }
-}
+//     // if (user != null) {
+//     //   return SizedBox();
+//     // } else {
+//     return typeOfUser == null
+//         ? SplashScreen()
+//         : Checkinguserjwt(jwtToken: typeOfUser!);
+//   }
+//   // }
+// }

@@ -35,6 +35,15 @@ class _UserProfileScreen extends State<Userprofilescreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () {
+                SignController.googleSignOut();
+              },
+              icon: Icon(Icons.logout))
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(18.0),
         child: Center(
