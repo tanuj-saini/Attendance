@@ -312,7 +312,12 @@ class _UserDashBoard extends State<UserDashBoard> {
                 SharedPreferences getPref =
                     await SharedPreferences.getInstance();
                 getPref.setString("jwtToken", "");
-                signController.logoutUser();
+                String? isGoogle = getPref.getString("isGoogle");
+                if (isGoogle == null || isGoogle == "") {
+                  signController.logoutUser();
+                } else {
+                  signController.googleSignOut();
+                }
               },
               child: Text(
                 "OK",

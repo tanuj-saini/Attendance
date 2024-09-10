@@ -1,4 +1,5 @@
 import 'package:attendence/Components/CustomTextFormField.dart';
+import 'package:attendence/Screen/Controller/LoginController.dart';
 import 'package:attendence/Screen/SignUp/Sign.dart';
 import 'package:attendence/Screen/Controller/SignContoller.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +11,9 @@ import 'package:attendence/Utils/Colors.dart';
 class LoginUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final SignViewModelContoller signController =
-        Get.put(SignViewModelContoller());
+    final LoginController loginController = Get.put(LoginController());
+    // final SignViewModelContoller signController =
+    //     Get.find<SignViewModelContoller>();
     final height = MediaQuery.sizeOf(context).height;
     final width = MediaQuery.sizeOf(context).width;
     final _formKey = GlobalKey<FormState>();
@@ -69,7 +71,7 @@ class LoginUser extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Sign in',
+                        'Sign In',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
@@ -79,24 +81,26 @@ class LoginUser extends StatelessWidget {
                       ),
                       SizedBox(height: 25),
                       Obx(() => CustomTextField(
-                          controller: signController.emailController.value,
+                          controller:
+                              loginController.emailControllerLogin.value,
                           hintText: "Email",
                           iconButton: const Icon(Icons.email))),
                       SizedBox(height: 15),
                       Obx(() => CustomTextField(
-                          controller: signController.passwordController.value,
+                          controller:
+                              loginController.passwordControllerLogin.value,
                           hintText: "Password",
                           iconButton: const Icon(Icons.password))),
-                      SizedBox(height: 25),
+                      SizedBox(height: 20),
                       Obx(() => ElevatedButton(
                             onPressed: () {
-                              if (!signController.isLodingGoogle.value &&
-                                  !signController.isLodingPhone.value) {
-                                signController.emailPasswordLoginUser();
+                              if (!loginController.isLodingGoogle.value &&
+                                  !loginController.isLodingPhone.value) {
+                                loginController.emailPasswordLoginUser();
                               }
                             },
-                            child: signController.isLodingLogin.value == false
-                                ? Text('Email/Password Login',
+                            child: loginController.isLodingLogin.value == false
+                                ? Text('Login',
                                     style: TextStyle(color: Colors.white))
                                 : CircularProgressIndicator(),
                             style: ElevatedButton.styleFrom(
@@ -108,7 +112,7 @@ class LoginUser extends StatelessWidget {
                               ),
                             ),
                           )),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
                       // TextButton(
                       //   onPressed: () {
                       //     signController.forgetPassword();
@@ -125,10 +129,10 @@ class LoginUser extends StatelessWidget {
                       Text("- - - - - OR - - - - -"),
                       Obx(() => ElevatedButton(
                             onPressed: () {
-                              signController.googleSignIn();
+                              loginController.googleSignIn();
                             },
-                            child: signController.isLodingSign.value == false
-                                ? Text('Googel Sign In',
+                            child: loginController.isLodingSign.value == false
+                                ? Text('Google Sign In',
                                     style: TextStyle(color: Colors.white))
                                 : CircularProgressIndicator(),
                             style: ElevatedButton.styleFrom(
@@ -150,7 +154,7 @@ class LoginUser extends StatelessWidget {
                           SizedBox(width: 5),
                           GestureDetector(
                             onTap: () {
-                              Navigator.pushReplacement(
+                              Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => SignUp()));

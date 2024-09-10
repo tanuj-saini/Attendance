@@ -15,9 +15,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SignViewModelContoller extends GetxController {
   FirebaseAuth _auth = FirebaseAuth.instance;
-  final AuthService _authService = AuthService();
+
   final emailController = TextEditingController().obs;
   final passwordController = TextEditingController().obs;
+  //   final emailControllerSign = TextEditingController().obs;
+  // final passwordControllerSign = TextEditingController().obs;
   RxBool isLodingLogin = false.obs;
   RxBool isLodingSign = false.obs;
   final _api = LoginRepositry();
@@ -27,7 +29,16 @@ class SignViewModelContoller extends GetxController {
     booleans.value = value;
   }
 
-  // @override
+  @override
+  void onClose() {
+    // Dispose of the controllers when the controller is removed
+    emailController.value.dispose();
+    passwordController.value.dispose();
+    // emailControllerSign.value.dispose();
+    // passwordControllerSign.value.dispose()
+    super.onClose();
+  }
+  //  @override
   // void onClose() {
   //   // Dispose of the controllers when the controller is removed
   //   emailController.value.dispose();
@@ -71,34 +82,34 @@ class SignViewModelContoller extends GetxController {
     }
   }
 
-  void emailPasswordLoginUser() async {
-    String _email = emailController.value.text;
-    String _password = passwordController.value.text;
-    try {
-      changeLodingState(true, isLodingLogin);
-      UserCredential _credential = await _auth.signInWithEmailAndPassword(
-          email: _email, password: _password);
-      var _user = _credential.user;
+  // void emailPasswordLoginUser() async {
+  //   String _email = emailController.value.text;
+  //   String _password = passwordController.value.text;
+  //   try {
+  //     changeLodingState(true, isLodingLogin);
+  //     UserCredential _credential = await _auth.signInWithEmailAndPassword(
+  //         email: _email, password: _password);
+  //     var _user = _credential.user;
 
-      UserModelDto isTrue = await userRepo.sendDataSignIN(_email, _password);
+  //     UserModelDto isTrue = await userRepo.sendDataSignIN(_email, _password);
 
-      if (_user != null && isTrue.name != null) {
-        Get.snackbar("User Successfully Logged In", "Welcome!");
-        // SharedPreferences prefs = await SharedPreferences.getInstance();
-        // String? bool = prefs.getString('valid');
+  //     if (_user != null && isTrue.name != null) {
+  //       Get.snackbar("User Successfully Logged In", "Welcome!");
+  //       // SharedPreferences prefs = await SharedPreferences.getInstance();
+  //       // String? bool = prefs.getString('valid');
 
-        Get.offAll(UserDashBoard());
-      } else {
-        Get.offAll(Userprofilescreen());
-        changeLodingState(false, isLodingLogin);
-      }
-    } on FirebaseAuthException catch (e) {
-      debugPrint('********************ERROR2****************');
-      Get.snackbar("User Failed", "${e.toString()}");
-      debugPrint(e.toString());
-      changeLodingState(false, isLodingLogin);
-    }
-  }
+  //       Get.offAll(UserDashBoard());
+  //     } else {
+  //       Get.offAll(Userprofilescreen());
+  //       changeLodingState(false, isLodingLogin);
+  //     }
+  //   } on FirebaseAuthException catch (e) {
+  //     debugPrint('********************ERROR2****************');
+  //     Get.snackbar("User Failed", "${e.toString()}");
+  //     debugPrint(e.toString());
+  //     changeLodingState(false, isLodingLogin);
+  //   }
+  // }
 
   void logoutUser() async {
     try {
@@ -118,8 +129,13 @@ class SignViewModelContoller extends GetxController {
       Get.snackbar("Email Error", "Please Enter Valid Email");
     }
     await FirebaseAuth.instance
-        .sendPasswordResetEmail(email: emailController.value.text);
-    Get.snackbar("Rest Password", "Email Send Successfull");
+        .sendPasswordResetEmail(email: emailController.value.text)
+        .then(
+      (value) {
+        // print(value!.toString());
+      },
+    );
+    Get.snackbar("Reset Password", "Email Send Successfull");
   }
 
   void googleSignIn() async {
@@ -152,12 +168,14 @@ class SignViewModelContoller extends GetxController {
 
       print(tokenId);
       print("startApi");
-
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString("isGoogle", "yes");
       _api.googleSignUp({
         "token": tokenId,
       }, "/user/googleSignup").then((value) {
         changeLodingState(false, isLodingGoogle);
         Get.snackbar("Successfully Logged In", "Welcome");
+
         Get.to(Userprofilescreen());
       }).catchError((error) {
         Get.snackbar("Error", error.toString());
@@ -174,12 +192,14 @@ class SignViewModelContoller extends GetxController {
   void googleSignOut() async {
     try {
       GoogleSignIn _googleSignIn = GoogleSignIn();
-
+      SharedPreferences getPref = await SharedPreferences.getInstance();
       // Check if the user is currently signed in
       if (await _googleSignIn.isSignedIn()) {
         // Attempt to sign out
         await _googleSignIn.signOut();
+        getPref.setString("isGoogle", "");
         Get.snackbar("Logged Out", "You have successfully logged out.");
+        Get.offAll(() => SplashScreen());
         print("User signed out from Google.");
       } else {
         // User is not signed in

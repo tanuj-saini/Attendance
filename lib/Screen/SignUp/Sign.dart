@@ -94,13 +94,13 @@ class SignUp extends StatelessWidget {
                               hintText: "Password",
                               iconButton: Icon(Icons.password),
                             )),
-                        SizedBox(height: 20),
+                        SizedBox(height: 15),
                         Obx(() => ElevatedButton(
                               onPressed: () {
                                 signController.emailPasswordCreateUser(context);
                               },
                               child: signController.isLodingSign.value == false
-                                  ? Text('Email/Password User Sign',
+                                  ? Text('SigUp',
                                       style: TextStyle(color: Colors.white))
                                   : CircularProgressIndicator(),
                               style: ElevatedButton.styleFrom(
@@ -137,22 +137,23 @@ class SignUp extends StatelessWidget {
                                 ),
                               ),
                             )),
-                        SizedBox(height: 20),
+                        SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Already have an account?"),
+                            Text(
+                              "Already have an account?",
+                            ),
                             SizedBox(width: 5),
                             GestureDetector(
                               onTap: () {
-                                Navigator.pushReplacement(
+                                Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            LoginUser())); // Navigate to login
+                                        builder: (context) => LoginUser()));
                               },
                               child: Text(
-                                'Sign in',
+                                'Sign Up',
                                 style: TextStyle(
                                   color: AppColors.navy,
                                   fontWeight: FontWeight.bold,

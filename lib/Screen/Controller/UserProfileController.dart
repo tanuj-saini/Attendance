@@ -182,37 +182,37 @@ class Userprofilecontroller extends GetxController {
     }
   }
 
-  void sendUserData(UserModelSendData userModelData) async {
-    setIsLoadingData(true.obs);
+  // void sendUserData(UserModelSendData userModelData) async {
+  //   setIsLoadingData(true.obs);
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('jwtToken');
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String? token = prefs.getString('jwtToken');
 
-    if (token == null) {
-      prefs.setString('jwtToken', '');
-    }
-    print("send data");
-    _api.sendData(
-      userModelData.toJson(),
-      "/sendData",
-      <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'x-auth-token-w': token!,
-      },
-    ).then((value) {
-      isLoadingData.value = false;
+  //   if (token == null) {
+  //     prefs.setString('jwtToken', '');
+  //   }
+  //   print("send data");
+  //   _api.sendData(
+  //     userModelData.toJson(),
+  //     "/sendData",
+  //     <String, String>{
+  //       'Content-Type': 'application/json; charset=UTF-8',
+  //       'x-auth-token-w': token!,
+  //     },
+  //   ).then((value) {
+  //     isLoadingData.value = false;
 
-      Get.snackbar("Attendence Mark", "😀😀");
-      setIsLoading(false.obs);
-    }).onError((error, stackTrace) {
-      Get.snackbar("Error", error.toString());
-      print("Error: $error");
-      print("StackTrace: $stackTrace");
-      setError(error.toString());
+  //     Get.snackbar("Attendence Mark", "😀😀");
+  //     setIsLoading(false.obs);
+  //   }).onError((error, stackTrace) {
+  //     Get.snackbar("Error", error.toString());
+  //     print("Error: $error");
+  //     print("StackTrace: $stackTrace");
+  //     setError(error.toString());
 
-      isLoading.value = false;
-    });
-  }
+  //     isLoading.value = false;
+  //   });
+  // }
 
   Future<void> sendUserDataBytes(UserModelSendData userData) async {
     try {
